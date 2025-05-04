@@ -74,22 +74,26 @@ Z7_COM7F_IMF(CEncoder::SetCoderProperties(const PROPID * propIDs, const PROPVARI
     case NCoderPropID::kAdvMax:
       if (!v)
         break;
+    #if Z7_ZSTD_ADVMAX_ALLOWED // 64-bit only
       _Max = true;
-      v = Z7_ZSTD_ADVMAX_AS_LEV;
+    #endif
+      v = Z7_ZSTD_ULTIMATE_LEV;
     case NCoderPropID::kLevel:
       {
-        _Level = !_Max ? v : Z7_ZSTD_ADVMAX_AS_LEV;
+        _Level = !_Max ? v : Z7_ZSTD_ULTIMATE_LEV;
         if (v < 1) {
           _Level = 1;
         } else if ((Int32)v > ZSTD_maxCLevel()) {
-          _Max = (_Level == Z7_ZSTD_ADVMAX_AS_LEV); // special case (level from GUI)
+        #if Z7_ZSTD_ADVMAX_ALLOWED // 64-bit only
+          _Max = (_Level == Z7_ZSTD_ULTIMATE_LEV); // special case (level from GUI)
+        #endif
           _Level = ZSTD_maxCLevel();
         }
 
         /**
-         * zstd default levels: _Level => 1..ZSTD_maxCLevel(), Z7_ZSTD_ADVMAX_AS_LEV (128) == --max
+         * zstd default levels: _Level => 1..ZSTD_maxCLevel(), Z7_ZSTD_ULTIMATE_LEV (128) == --max
          */
-        _props._level = static_cast < Byte > (!_Max ? _Level : Z7_ZSTD_ADVMAX_AS_LEV);
+        _props._level = static_cast < Byte > (!_Max ? _Level : Z7_ZSTD_ULTIMATE_LEV);
         break;
       }
     case NCoderPropID::kFast:
@@ -264,6 +268,7 @@ Z7_COM7F_IMF(CEncoder::Code(ISequentialInStream *inStream,
     if (!_dstBuf)
       return E_OUTOFMEMORY;
 
+  #if Z7_ZSTD_ADVMAX_ALLOWED // 64-bit only
     // params from setMaxCompression(), https://github.com/facebook/zstd/blob/v1.5.7/programs/zstdcli.c#L642 :
     if (_Max) {
       _Long = 1;
@@ -281,6 +286,7 @@ Z7_COM7F_IMF(CEncoder::Code(ISequentialInStream *inStream,
       _LdmBucketSizeLog = ZSTD_LDM_BUCKETSIZELOG_MAX;
       _Level = ZSTD_maxCLevel();
     }
+  #endif
 
     /* setup level */
     err = ZSTD_CCtx_setParameter(_ctx, ZSTD_c_compressionLevel, (UInt32)_Level);
