@@ -386,7 +386,7 @@ static const CFormatInfo g_Formats[] =
   },
   {
     "zstd",
-    (1 << 1) | (1 << 3) | (1 << 5) | (1 << 11) | (1 << 17) | (1 << 22),
+    (1 << 1) | (1 << 3) | (1 << 11) | (1 << 19) | (1 << 22),
     METHODS_PAIR(g_ZstdMethods),
     kFF_MultiThread
   },
@@ -398,7 +398,7 @@ static const CFormatInfo g_Formats[] =
   },
   {
     "Lizard",
-    (1 << 10) | (1 << 11) | (1 << 13) | (1 << 15) | (1 << 17) | (1 << 19),
+    (1 << 10) | (1 << 13) | (1 << 15) | (1 << 17) | (1 << 19),
     METHODS_PAIR(g_LizardMethods),
     kFF_MultiThread
   },
@@ -1661,7 +1661,7 @@ void CCompressDialog::SetLevel2()
   const CFormatInfo &fi = g_Formats[GetStaticFormatIndex()];
   const CArcInfoEx &ai = Get_ArcInfoEx();
   UInt32 LevelsMask = fi.LevelsMask;
-  UInt32 LevelsStart = 1;
+  UInt32 LevelsStart = (LevelsMask & 1) ? 0 : 1;
   UInt32 LevelsEnd = 9;
   int id = -1;
   if (ai.LevelsMask != 0xFFFFFFFF)
@@ -1708,13 +1708,13 @@ void CCompressDialog::SetLevel2()
   }
 
   const WCHAR t[] = L"Level ";
-  for (UInt32 i = LevelsStart, ir, langID = 0; i <= LevelsEnd; i++)
+  for (UInt32 i = LevelsStart, ir, j = 0; i <= LevelsEnd; i++)
   {
 
     // lizard needs extra handling
     if (GetMethodID() >= kLIZARD_M1 && GetMethodID() <= kLIZARD_M4) {
       ir = i;
-      if (ir % 10 == 0) langID = 0;
+      if (ir % 10 == 0) j = 0;
       while (ir > 19) { ir -= 10; }
     } else {
       ir = i;
@@ -1724,18 +1724,18 @@ void CCompressDialog::SetLevel2()
     if (LevelsMask < (UInt32)(1 << ir))
       break;
 
-    if ((LevelsMask & (1 << ir)) != 0 && langID < Z7_ARRAY_SIZE(g_Levels))
+    if ((LevelsMask & (1 << ir)) != 0 && j < Z7_ARRAY_SIZE(g_Levels))
     {
       // skip level 0 (store) if not supported
-      if (langID == 0 && ir > 0) langID = 1;
+      if (j == 0 && ir > 0) j = 1;
       UString s = t;
       s.Add_UInt32(i);
-      s += L" "; if (i <= 9) s += L" "; s += L"(";
-      s += LangString(g_Levels[langID]);
+      s += L" (";
+      s += LangString(g_Levels[j]);
       s += L")";
       int index = (int)m_Level.AddString(s);
       m_Level.SetItemData(index, i);
-      langID++;
+      j++;
     } else {
       UString s = t;
       s.Add_UInt32(i);
@@ -1744,7 +1744,14 @@ void CCompressDialog::SetLevel2()
     }
   }
   if (1) { // ultimate level (max possible or zstd --max if allowed)
-    int index = (int)m_Level.AddString(L"-mmax  (Ultimate)");
+    UString s;
+    if (id == kZSTD) {
+      s = LangString(IDS_METHOD_ADV_MAX);
+    } else {
+      s = LangString(IDS_METHOD_HIGHEST);
+    }
+    if (s.IsEmpty()) s = "Highest (Ultimate) [-mmax]"; // for the case it is not localized (e. g. old dict).
+    int index = (int)m_Level.AddString(s);
     m_Level.SetItemData(index, Z7_ZSTD_ULTIMATE_LEV);
     if (readLevel == Z7_ZSTD_ULTIMATE_LEV) { // exception (available for any method), restore read from registry
       level = readLevel;
