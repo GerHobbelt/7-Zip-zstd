@@ -116,7 +116,7 @@ Hashers:
 - compression and decompression of [Brotli] (`.br`), [Lizard] (`.liz`), [LZ4] (`.lz4`), [LZ5] (`.lz5`) and [Zstandard] (`.zst`) files
 - handling of ZIP files with [Zstandard] compression
 - included [lzip] decompression support, patch from: https://download.savannah.gnu.org/releases/lzip/7zip/
-- explorer context menu: _"Add to xy.7z"_ will use all parameters of the last "Add to Archive" compression dialog (this includes: method, level, dictionary, blocksize, threads and paramters input box)
+- explorer context menu: _"Add to xy.7z"_ will use all parameters of the last "Add to Archive" compression dialog (this includes: method, level, dictionary, blocksize, threads and parameters input box)
 - squashfs files with LZ4 or Zstandard compression can be handled
 - several history settings aren't stored by default, look [here](https://sourceforge.net/p/sevenzip/discussion/45797/thread/dc2ac53d/?limit=25) for some info about that, you can restore original 7-Zip behavior via `tools->options->settings`
 - these hashes can be calculated: CRC32, CRC64, MD2, MD4, MD5, SHA1, SHA256, SHA384, SHA512, SHA3-256, SHA3-384, SHA3-512, XXH32, XXH64, BLAKE2sp, BLAKE3 (lowercase or uppercase)
