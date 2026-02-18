@@ -17,7 +17,7 @@ You can install it in two ways:
 1. [Zstandard] v1.5.7 is a real-time compression algorithm, providing high compression ratios. It offers a very wide range of compression / speed trade-off, while being backed by a very fast decoder.
    - Levels: 1..22
 
-2. [Brotli] v.1.1.0 is a generic-purpose lossless compression algorithm that compresses data using a combination of a modern variant of the LZ77 algorithm, Huffman coding and 2nd order context modeling, with a compression ratio comparable to the best currently available general-purpose compression methods. It is similar in speed with deflate but offers more dense compression.
+2. [Brotli] v.1.2.0 is a generic-purpose lossless compression algorithm that compresses data using a combination of a modern variant of the LZ77 algorithm, Huffman coding and 2nd order context modeling, with a compression ratio comparable to the best currently available general-purpose compression methods. It is similar in speed with deflate but offers more dense compression.
    - Levels: 0..11
 
 3. [LZ4] v1.10.0 is lossless compression algorithm, providing compression speed at 400 MB/s per core (0.16 Bytes/cycle). It features an extremely fast decoder, with speed in multiple GB/s per core (0.71 Bytes/cycle). A high compression derivative, called LZ4_HC, is available, trading customizable CPU time for compression ratio.
@@ -267,6 +267,7 @@ For the benchmarks I am using Windows 7 64bit on my Laptop which has the followi
 - FileManager Toolbar Icon Theme: Glyfz 2016 by AlexGal [homepage](https://www.deviantart.com/alexgal23)
 - File Types Icon Theme: Windows 10 by masamunecyrus [homepage](https://www.deviantart.com/masamunecyrus)
 - Additional icons file types created by Mr4Mike4 [homepage](https://github.com/Mr4Mike4)
+- Dark mode support via darkmodelib (v0.44.0) by ozone10 [homepage](https://github.com/ozone10)
 
 ## License and Redistribution
 
@@ -289,15 +290,15 @@ You find this project useful, maybe you consider a donation ;-)
 
 ## Version Information
 
-- 7-Zip ZS Version 25.01
-  - [Brotli] Version 1.1.0
+- 7-Zip ZS Version 25.01 - Release 4
+  - [Brotli] Version 1.2.0
   - [Fast LZMA2] Version 1.0.1
   - [Lizard] Version 2.1
   - [LZ4] Version 1.10.0
   - [LZ5] Version 1.5
   - [Zstandard] Version 1.5.7
 
-/TR 2025-08-06
+/TR 2025-12-20
 
 ## Notes
 
