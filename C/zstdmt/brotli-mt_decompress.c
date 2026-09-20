@@ -577,7 +577,7 @@ size_t BROTLIMT_decompressDCtx(BROTLIMT_DCtx * ctx, BROTLIMT_RdWr_t * rdwr)
 		if (
 			ret == 0 ||													/* no error */
 			ctx->frames ||											/* read more data (passed 1st block) */
-			(ctx->threadsset && !ctx->threads)	/* forced single-threaded */
+			(ctx->threadsset > 0 && !ctx->threads)	/* forced single-threaded (in .br) */
 		) {
 			return ret;
 		}

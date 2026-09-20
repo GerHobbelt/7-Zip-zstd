@@ -145,7 +145,7 @@ test regression--test-mt-option {7z regression test for with previous versions c
 	foreach p [lsort -dictionary [glob -directory $Z7_REGR_TEST_DIR test.txt.*]] {
 		if {![regexp {\.txt(?:\.(?:br|zstd))?\.7z$} $p]} continue
 		set i 0
-		foreach opt {-mmt- -mmt=off -mmt=0 -m0=:mt- -m0=:mtoff -m0=:mt0 -m0=:mt -m0=:mt+ -m0=:mton -m0=:mt1 -m0=:mtp100 -m0=:mt0u100 -m0=:mtd2 -m0=:mtp1+1} {
+		foreach opt {-mmt=off -m0=:mt- -m0=:mtoff -m0=:mt0 -m0=:mt -m0=:mt+ -m0=:mton -m0=:mt1 -m0=:mtp100 -m0=:mt0u100 -m0=:mtd2 -m0=:mtp1+1} {
 			7z t {*}$opt -- $p
 			assertLogged "Everything is Ok"
 			incr i
@@ -154,13 +154,38 @@ test regression--test-mt-option {7z regression test for with previous versions c
 	}
 	join $ret \n
 } [join {
-	{test.txt.7z 14}
-	{test.txt.br.7z 14}
-	{test.txt.zstd.7z 14}
+	{test.txt.7z 12}
+	{test.txt.br.7z 12}
+	{test.txt.zstd.7z 12}
 } \n]
+
+test regression--test-brotli-st-within-7z {7z regression test for with previous versions compressed files (brotli-st in 7z)} {
+	variable Z7_REGR_TEST_DIR
+	set p [file join $Z7_REGR_TEST_DIR err/test.txt.br-st.7z]
+	# test of mistakenly created st-brotli within 7z (must succeed decompressing by -mmt=off):
+	7z t -scrcSHA256 -mmt=off -- $p
+	assertLogged "Everything is Ok"
+	set ret 1
+} 1
 
 set tmpdir [file join [temporaryDirectory] 7z-test-[format %x-%lx [pid] [clock microseconds]]]
 file mkdir $tmpdir
+
+test regression--test-brotli-mt-within-7z {7z regression test for brotli-mt in 7z container with and without threads)} -body {
+	set ret {}
+	set p [file join $tmpdir test-mt-br.7z]
+	# test of brotli within 7z must be always mt-brotli (must succeed decompressing regardless thread count):
+	foreach opt {{} -mmt=off -mmt=on -mmt=1} {
+		7z a -t7z -m0=brotli {*}$opt -si $p << "This is a test string passed to stdin"
+		foreach dopt {{} -mmt=off -mmt=on -mmt=1} {
+			lappend ret [list "$opt --> $dopt" [catch {
+				7z e -t7z {*}$dopt -so $p
+			} res] [string trim $res]]
+		}
+		file delete $p
+	}
+	join $ret \n
+} -match glob -result [join [lrepeat 16 [list "* --> *" 0 "This is a test string passed to stdin"]] \n]
 
 test regression--list-tech-info {7z regression test for with previous versions compressed files, list with technical info} {
 	variable Z7_REGR_TEST_DIR

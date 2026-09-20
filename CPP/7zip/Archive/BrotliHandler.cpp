@@ -293,6 +293,7 @@ static HRESULT UpdateArchive(
   localProgressSpec->Init(updateCallback, true);
   NCompress::NBROTLI::CEncoder *encoderSpec = new NCompress::NBROTLI::CEncoder;
   encoderSpec->unpackSize = unpackSize;
+  encoderSpec->_numThreads_WasForced = 1;
   encoderSpec->SetNumberOfThreads(0); /* .br - single threaded processing (without header/mt-frames) */
   CMyComPtr<ICompressCoder> encoder = encoderSpec;
   RINOK(props.SetCoderProps(encoderSpec, NULL));

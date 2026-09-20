@@ -111,9 +111,6 @@ Z7_COM7F_IMF(CDecoder::SetNumberOfThreads(UInt32 numThreads))
   else
   if (numThreads > BROTLIMT_THREAD_MAX) numThreads = BROTLIMT_THREAD_MAX;
   _numThreads = numThreads;
-  // if 7z container - shall be mt-brotli:
-  if (_numThreads_WasForced == -1 && numThreads <= 0)
-    _numThreads = 1;
   return S_OK;
 }
 
