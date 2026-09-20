@@ -1116,11 +1116,7 @@ bool MyMoveFile(CFSTR oldFile, CFSTR newFile)
 
 static bool CreateDir2(CFSTR path)
 {
-#if defined(_WIN32) || defined(_MSC_VER)
-  return (_mkdir(path) == 0);
-#else
   return (mkdir(path, ACCESSPERMS) == 0);
-#endif
 }
 
 bool CreateDir(CFSTR path)
@@ -1248,11 +1244,6 @@ struct C_umask
 
   C_umask()
   {
-#if defined(_WIN32) || defined(_MSC_VER)
-    // Windows ignores group/other permissions in _umask.
-    // Fall back to a standard default mode (0755 equivalents or open fallback).
-    mask = 0644;
-#else
     /* by security reasons we restrict attributes according
        with process's file mode creation mask (umask) */
     const mode_t um = umask(0); // octal :0022 is expected // NOSONAR
@@ -1261,7 +1252,6 @@ struct C_umask
     // printf("\n umask = 0%03o mask = 0%03o\n", um, mask);
     
     // mask = 0777; // debug we can disable the restriction:
-#endif
   }
 };
 
